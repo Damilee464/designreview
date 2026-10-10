@@ -1,0 +1,1 @@
+import{l as e,o as t}from"./client-jPZFAxFL.js";import{t as n}from"./useRouter-D9uj5Xgt.js";var r=e(t(),1);function i(e){let t=n();return r.useCallback(n=>t.navigate({...n,from:n.from??e?.from}),[e?.from,t])}export{i as t};
