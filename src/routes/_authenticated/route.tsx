@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, LayoutGrid, LogOut, Moon, Plus, BarChart3, Settings, Sun, Users } from "lucide-react";
+import { Bell, LayoutGrid, LogOut, Menu, Moon, Plus, BarChart3, Settings, Sun, Users, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe, initials } from "@/lib/app";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ function AppShell() {
   const navigate = useNavigate();
   const [dark, setDark] = useDarkMode();
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const { data: unread = 0 } = useQuery({
     queryKey: ["unread"],
@@ -54,9 +55,7 @@ function AppShell() {
         qc.invalidateQueries({ queryKey: ["notifications"] });
       })
       .subscribe();
-    return () => {
-      supabase.removeChannel(ch);
-    };
+    return () => { supabase.removeChannel(ch); };
   }, [me, qc]);
 
   async function signOut() {
@@ -65,6 +64,7 @@ function AppShell() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
+
   const nav = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, show: true },
     { to: "/notifications", label: "Notifications", icon: Bell, show: true, badge: unread },
@@ -72,14 +72,26 @@ function AppShell() {
     { to: "/team", label: "Team", icon: Users, show: !!me?.isAdmin },
   ] as const;
 
-  return (
-    <div className="flex min-h-screen">
-      <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col bg-sidebar p-4 text-sidebar-foreground">
-        <Link to="/" className="flex items-center gap-2 px-2 py-2 font-display text-lg font-bold text-sidebar-accent-foreground hover:opacity-80 transition-opacity">
-          <span className="grid size-7 place-items-center rounded-md bg-sidebar-primary text-sm text-sidebar-primary-foreground">D</span>
-          DesignReview
-        </Link>
-        <Button asChild className="mt-6">
+  // Shared sidebar content — used in both desktop sidebar and mobile drawer
+  function SidebarContent({ onClose }: { onClose?: () => void }) {
+    return (
+      <>
+        <div className="flex items-center justify-between">
+          <Link
+            to="/"
+            onClick={onClose}
+            className="flex items-center gap-2 px-2 py-2 font-display text-lg font-bold text-sidebar-accent-foreground hover:opacity-80 transition-opacity"
+          >
+            <span className="grid size-7 place-items-center rounded-md bg-sidebar-primary text-sm text-sidebar-primary-foreground">D</span>
+            DesignReview
+          </Link>
+          {onClose && (
+            <button onClick={onClose} className="p-1 text-sidebar-foreground hover:text-sidebar-accent-foreground md:hidden">
+              <X className="size-5" />
+            </button>
+          )}
+        </div>
+        <Button asChild className="mt-6" onClick={onClose}>
           <Link to="/designs/new">
             <Plus /> New submission
           </Link>
@@ -89,6 +101,7 @@ function AppShell() {
             <Link
               key={n.to}
               to={n.to}
+              onClick={onClose}
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
             >
@@ -112,11 +125,9 @@ function AppShell() {
           <button
             aria-label="Toggle dark mode"
             onClick={() => setDark((d) => !d)}
-            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none ${dark ? "bg-sidebar-primary" : "bg-sidebar-accent"}`}
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors ${dark ? "bg-sidebar-primary" : "bg-sidebar-accent"}`}
           >
-            <span
-              className={`pointer-events-none inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${dark ? "translate-x-4" : "translate-x-0"}`}
-            />
+            <span className={`pointer-events-none inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${dark ? "translate-x-4" : "translate-x-0"}`} />
           </button>
         </div>
 
@@ -129,17 +140,66 @@ function AppShell() {
             <div className="truncate text-sm text-sidebar-accent-foreground">{me?.name}</div>
             <div className="text-xs capitalize">{me?.roles.join(", ")}</div>
           </div>
-          <Link to="/profile" aria-label="Profile settings" className="hover:text-sidebar-accent-foreground">
+          <Link to="/profile" aria-label="Profile settings" onClick={onClose} className="hover:text-sidebar-accent-foreground">
             <Settings className="size-4" />
           </Link>
-          <button onClick={() => setConfirmSignOut(true)} aria-label="Sign out" className="hover:text-sidebar-accent-foreground">
+          <button onClick={() => { onClose?.(); setConfirmSignOut(true); }} aria-label="Sign out" className="hover:text-sidebar-accent-foreground">
             <LogOut className="size-4" />
           </button>
         </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen">
+      {/* Desktop sidebar — hidden on mobile */}
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col bg-sidebar p-4 text-sidebar-foreground md:flex">
+        <SidebarContent />
       </aside>
-      <main className="min-w-0 flex-1">
-        <Outlet />
-      </main>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer — slides in from left */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-sidebar p-4 text-sidebar-foreground shadow-xl transition-transform duration-300 md:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <SidebarContent onClose={() => setMobileOpen(false)} />
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Mobile top bar */}
+        <header className="flex items-center gap-3 border-b bg-card px-4 py-3 md:hidden">
+          <button
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Menu className="size-6" />
+          </button>
+          <Link to="/" className="flex items-center gap-2 font-display text-base font-bold">
+            <span className="grid size-6 place-items-center rounded-md bg-primary text-xs text-primary-foreground">D</span>
+            DesignReview
+          </Link>
+          {unread > 0 && (
+            <Link to="/notifications" className="ml-auto">
+              <span className="flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                <Bell className="size-3" /> {unread}
+              </span>
+            </Link>
+          )}
+        </header>
+
+        <main className="min-w-0 flex-1">
+          <Outlet />
+        </main>
+      </div>
 
       {/* Sign out confirmation */}
       <AlertDialog open={confirmSignOut} onOpenChange={setConfirmSignOut}>

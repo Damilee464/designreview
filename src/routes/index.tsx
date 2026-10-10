@@ -106,17 +106,17 @@ function ImageCarousel() {
         </div>
       </div>
 
-      {/* Arrow controls */}
+      {/* Arrow controls — always visible on mobile, hover on desktop */}
       <button
         onClick={() => advance(-1)}
-        className="absolute left-3 top-1/2 -translate-y-1/2 grid size-8 place-items-center rounded-full bg-black/30 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-black/50"
+        className="absolute left-3 top-1/2 -translate-y-1/2 grid size-8 place-items-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/50"
         aria-label="Previous"
       >
         <ChevronLeft className="size-4" />
       </button>
       <button
         onClick={() => advance(1)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 grid size-8 place-items-center rounded-full bg-black/30 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:bg-black/50"
+        className="absolute right-3 top-1/2 -translate-y-1/2 grid size-8 place-items-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/50"
         aria-label="Next"
       >
         <ChevronRight className="size-4" />
@@ -157,7 +157,7 @@ function Landing() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-16">
+        <section className="mx-auto max-w-6xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-16">
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
             {/* Left copy */}
             <div>
@@ -165,7 +165,7 @@ function Landing() {
                 <Zap className="size-3" />
                 Design review & approval platform
               </div>
-              <h1 className="text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
                 Feedback that lands{" "}
                 <span className="relative inline-block">
                   <span className="relative z-10 text-primary">exactly</span>

@@ -246,12 +246,12 @@ function ReviewPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex items-center gap-4 border-b bg-card px-6 py-4">
+    <div className="flex h-[100dvh] flex-col">
+      <header className="flex flex-wrap items-center gap-2 border-b bg-card px-3 py-3 sm:gap-4 sm:px-6 sm:py-4">
         <Link to="/dashboard" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="size-5" /></Link>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="truncate text-xl font-bold">{design.title}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="truncate text-base font-bold sm:text-xl">{design.title}</h1>
             <StatusBadge value={design.status} />
             {isOverdue && (
               <span className="flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
@@ -259,7 +259,7 @@ function ReviewPage() {
               </span>
             )}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="hidden text-sm text-muted-foreground sm:block">
             {design.projects?.name ?? "No project"} · by {design.designer?.full_name}
             {design.status === "approved" && design.approved_at && (
               <> · approved by {design.approver?.full_name} on {format(new Date(design.approved_at), "d MMM yyyy, HH:mm")}</>
@@ -271,27 +271,27 @@ function ReviewPage() {
             <button
               key={v.id}
               onClick={() => setVersionNo(v.version_number)}
-              className={`rounded-md px-2.5 py-1 font-mono text-xs ${v.id === current?.id ? "bg-card shadow-card" : "text-muted-foreground"}`}
+              className={`rounded-md px-2 py-1 font-mono text-xs sm:px-2.5 ${v.id === current?.id ? "bg-card shadow-card" : "text-muted-foreground"}`}
             >
               V{v.version_number}
             </button>
           ))}
         </div>
         {me.isStaff && (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setStatus("changes_requested")} disabled={design.status === "changes_requested"}>
-              <RotateCcw /> Request changes
+          <div className="flex gap-1.5 sm:gap-2">
+            <Button variant="outline" size="sm" className="h-8 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm" onClick={() => setStatus("changes_requested")} disabled={design.status === "changes_requested"}>
+              <RotateCcw className="size-3 sm:size-4" /> <span className="hidden sm:inline">Request changes</span>
             </Button>
-            <Button size="sm" onClick={() => setStatus("approved")} disabled={design.status === "approved"}>
-              <Check /> Approve
+            <Button size="sm" className="h-8 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm" onClick={() => setStatus("approved")} disabled={design.status === "approved"}>
+              <Check className="size-3 sm:size-4" /> <span className="hidden sm:inline">Approve</span>
             </Button>
           </div>
         )}
         {isOwner && <NewVersionDialog designId={id} next={design.current_version + 1} userId={me.id} onDone={() => { setVersionNo(null); refresh(); }} />}
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <section className="min-w-0 flex-1 overflow-auto bg-muted bg-grid p-8">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <section className="min-w-0 flex-1 overflow-auto bg-muted bg-grid p-4 md:p-8">
           {current?.figma_url && (
             <a href={current.figma_url} target="_blank" rel="noreferrer" className="mb-4 inline-flex items-center gap-2 rounded-md border bg-card px-3 py-1.5 text-sm hover:text-primary">
               <ExternalLink className="size-4" /> Open in Figma
@@ -317,11 +317,11 @@ function ReviewPage() {
               )}
             </div>
           ) : current?.file_type === "pdf" && fileUrl ? (
-            <div className="h-full min-h-[600px]">
+            <div className="h-full min-h-[400px] md:min-h-[600px]">
               <iframe src={fileUrl} title={design.title} className="h-full w-full rounded-lg border bg-card" />
             </div>
           ) : (
-            <div className="grid h-80 place-items-center rounded-lg border bg-card text-muted-foreground">
+            <div className="grid h-60 place-items-center rounded-lg border bg-card text-muted-foreground md:h-80">
               <div className="text-center"><FileText className="mx-auto mb-2 size-8" />No file — review via the Figma link.</div>
             </div>
           )}
@@ -330,7 +330,7 @@ function ReviewPage() {
           )}
         </section>
 
-        <aside className="flex w-[380px] shrink-0 flex-col border-l bg-card">
+        <aside className="flex shrink-0 flex-col border-t bg-card md:h-auto md:w-[380px] md:border-l md:border-t-0" style={{ minHeight: 0 }}>
           <Tabs defaultValue="comments" className="flex min-h-0 flex-1 flex-col">
             <TabsList className="mx-4 mt-4">
               <TabsTrigger value="comments">Comments ({versionComments.filter((c) => !c.parent_id).length})</TabsTrigger>

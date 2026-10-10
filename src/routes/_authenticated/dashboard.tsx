@@ -83,10 +83,10 @@ function WelcomeBanner({ name, pending, total }: { name: string; pending: number
       <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-transparent" />
 
       {/* Content */}
-      <div className="relative flex items-center justify-between px-8 py-8">
+      <div className="relative flex flex-col gap-4 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-8">
         <div>
           <p className="text-sm font-medium text-white/70">{greeting}</p>
-          <h1 className="mt-0.5 text-3xl font-bold text-white">{name} 👋</h1>
+          <h1 className="mt-0.5 text-2xl font-bold text-white sm:text-3xl">{name} 👋</h1>
           <p className="mt-2 text-sm text-white/70">
             {total === 0
               ? "No designs submitted yet. Start by creating one."
@@ -151,7 +151,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
 
       {/* Welcome banner */}
       <WelcomeBanner
@@ -161,17 +161,17 @@ function Dashboard() {
       />
 
       {/* Stats */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`rounded-xl border ${s.bg} p-5 shadow-card`}>
-            <div className="text-sm text-muted-foreground">{s.label}</div>
-            <div className={`mt-2 font-display text-4xl font-bold ${s.cls}`}>{s.value}</div>
+          <div key={s.label} className={`rounded-xl border ${s.bg} p-4 sm:p-5 shadow-card`}>
+            <div className="text-xs sm:text-sm text-muted-foreground">{s.label}</div>
+            <div className={`mt-2 font-display text-3xl sm:text-4xl font-bold ${s.cls}`}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="mt-8 relative">
+      <div className="mt-6 sm:mt-8 relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           className="bg-card pl-9"
@@ -182,10 +182,10 @@ function Dashboard() {
       </div>
 
       {/* Filters */}
-      <div className="mt-3 flex flex-wrap items-end gap-3">
+      <div className="mt-3 flex flex-wrap items-end gap-2 sm:gap-3">
         <FilterBox label="Status">
           <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
-            <SelectTrigger className="w-44 bg-card"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36 sm:w-44 bg-card"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
@@ -196,7 +196,7 @@ function Dashboard() {
         </FilterBox>
         <FilterBox label="Project">
           <Select value={project} onValueChange={setProject}>
-            <SelectTrigger className="w-44 bg-card"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36 sm:w-44 bg-card"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All projects</SelectItem>
               {projects.map((p) => (
@@ -206,10 +206,10 @@ function Dashboard() {
           </Select>
         </FilterBox>
         <FilterBox label="From">
-          <Input type="date" className="w-40 bg-card" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <Input type="date" className="w-36 sm:w-40 bg-card" value={from} onChange={(e) => setFrom(e.target.value)} />
         </FilterBox>
         <FilterBox label="To">
-          <Input type="date" className="w-40 bg-card" value={to} onChange={(e) => setTo(e.target.value)} />
+          <Input type="date" className="w-36 sm:w-40 bg-card" value={to} onChange={(e) => setTo(e.target.value)} />
         </FilterBox>
         {!isDesigner && (
           <label className="flex h-9 items-center gap-2 text-sm">
@@ -220,9 +220,9 @@ function Dashboard() {
       </div>
 
       {/* Table */}
-      <div className="mt-5 overflow-hidden rounded-xl border bg-card shadow-card">
+      <div className="mt-5 overflow-x-auto rounded-xl border bg-card shadow-card">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-16 text-center text-muted-foreground">
+          <div className="flex flex-col items-center gap-3 p-12 text-center text-muted-foreground">
             <div className="grid size-14 place-items-center rounded-2xl bg-muted">
               <Search className="size-6 text-muted-foreground" />
             </div>
@@ -237,13 +237,13 @@ function Dashboard() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-5 py-3 font-medium">Design</th>
-                <th className="px-5 py-3 font-medium">Project</th>
-                <th className="px-5 py-3 font-medium">Designer</th>
-                <th className="px-5 py-3 font-medium">Version</th>
-                <th className="px-5 py-3 font-medium">Status</th>
-                <th className="px-5 py-3 font-medium">Due</th>
-                <th className="px-5 py-3 font-medium">Updated</th>
+                <th className="px-4 py-3 font-medium sm:px-5">Design</th>
+                <th className="hidden px-4 py-3 font-medium sm:table-cell sm:px-5">Project</th>
+                <th className="hidden px-4 py-3 font-medium md:table-cell sm:px-5">Designer</th>
+                <th className="hidden px-4 py-3 font-medium lg:table-cell sm:px-5">Version</th>
+                <th className="px-4 py-3 font-medium sm:px-5">Status</th>
+                <th className="hidden px-4 py-3 font-medium sm:table-cell sm:px-5">Due</th>
+                <th className="hidden px-4 py-3 font-medium md:table-cell sm:px-5">Updated</th>
               </tr>
             </thead>
             <tbody>
@@ -256,21 +256,21 @@ function Dashboard() {
                     onClick={() => navigate({ to: "/designs/$id", params: { id: d.id } })}
                     className={`cursor-pointer border-b last:border-0 transition-colors hover:bg-muted/40 ${overdue ? "bg-destructive/5" : ""}`}
                   >
-                    <td className="px-5 py-3.5">
+                    <td className="px-4 py-3.5 sm:px-5">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-primary">{d.title}</span>
                         {overdue && <AlertCircle className="size-3.5 shrink-0 text-destructive" aria-label="Overdue" />}
                       </div>
                       <div className="text-xs text-muted-foreground">{format(new Date(d.created_at), "d MMM yyyy")}</div>
                     </td>
-                    <td className="px-5 py-3.5 text-muted-foreground">{d.projects?.name ?? "—"}</td>
-                    <td className="px-5 py-3.5">{d.designer?.full_name}</td>
-                    <td className="px-5 py-3.5 font-mono text-xs">V{d.current_version}</td>
-                    <td className="px-5 py-3.5"><StatusBadge value={d.status} /></td>
-                    <td className={`px-5 py-3.5 text-xs ${overdue ? "font-semibold text-destructive" : "text-muted-foreground"}`}>
+                    <td className="hidden px-4 py-3.5 text-muted-foreground sm:table-cell sm:px-5">{d.projects?.name ?? "—"}</td>
+                    <td className="hidden px-4 py-3.5 md:table-cell sm:px-5">{d.designer?.full_name}</td>
+                    <td className="hidden px-4 py-3.5 font-mono text-xs lg:table-cell sm:px-5">V{d.current_version}</td>
+                    <td className="px-4 py-3.5 sm:px-5"><StatusBadge value={d.status} /></td>
+                    <td className={`hidden px-4 py-3.5 text-xs sm:table-cell sm:px-5 ${overdue ? "font-semibold text-destructive" : "text-muted-foreground"}`}>
                       {dueDate && isValid(dueDate) ? format(dueDate, "d MMM yyyy") : "—"}
                     </td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
+                    <td className="hidden px-4 py-3.5 text-muted-foreground md:table-cell sm:px-5">
                       {formatDistanceToNow(new Date(d.updated_at), { addSuffix: true })}
                     </td>
                   </tr>
