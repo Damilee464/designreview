@@ -1,5 +1,6 @@
 {
+  "framework": "tanstack-start",
+  "installCommand": "bun install",
   "buildCommand": "bun run build",
-  "outputDirectory": ".vercel/output",
-  "installCommand": "bun install"
+  "outputDirectory": ".vercel/output"
 }
