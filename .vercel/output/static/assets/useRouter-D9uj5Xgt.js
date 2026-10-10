@@ -1,1 +1,0 @@
-import{l as e,o as t}from"./client-jPZFAxFL.js";var n=e(t(),1),r=n.createContext(null);function i(e){return n.useContext(r)}export{r as n,i as t};
